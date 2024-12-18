@@ -16,10 +16,11 @@ def get_top_players(count=50, game_type='classical'):
 
 def get_30_day_history(usernames):
     results = []
-    today = datetime.utcnow().date()
+    today = datetime.today()
     thirty_days_ago = today - timedelta(days=30)
 
-    for username in usernames:
+    for user in usernames:
+        username = user['username']
         url = f"https://lichess.org/api/user/{username}/rating-history"
         response = requests.get(url, headers={"Accept": "application/json"})
 
@@ -32,6 +33,9 @@ def get_30_day_history(usernames):
             continue
 
         rating_data = response.json()
+        # TODO check for 'classical' as perf type. If KeyError, continue
+        print(rating_data)
+        exit()
 
         # Find the classical game type history
         for entry in rating_data:
@@ -69,8 +73,8 @@ def create_csv(players, filename='top_players_history.csv'):
 
 if __name__ == '__main__':
     players = get_top_players()
-    for player in players:
-        print(player['username'])
+    # for player in players:
+        # print(player['username'])
     top_player = players[0]
-    history_data = get_30_day_history(top_player['username'])
+    history_data = get_30_day_history(players)
     print(history_data)
